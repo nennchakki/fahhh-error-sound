@@ -2,7 +2,7 @@
   "name": "fahhh-error-sound",
   "displayName": "Fahhh Error Sound",
   "description": "Plays a random 'fahhh' sound when a terminal command fails",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "nennchakki",
   "icon": "media/icon.png",
   "repository": {
