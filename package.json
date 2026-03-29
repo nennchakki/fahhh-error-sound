@@ -3,12 +3,13 @@
   "displayName": "Fahhh Error Sound",
   "description": "Plays a random 'fahhh' sound when a terminal command fails",
   "version": "0.1.0",
-  "publisher": "nenchakki",
+  "publisher": "nennchakki",
   "icon": "media/icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/nennchakki/fahhh-error-sound"
   },
+  "license": "MIT",
   "engines": {
     "vscode": "^1.93.0"
   },

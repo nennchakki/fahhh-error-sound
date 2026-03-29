@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { execFile } from "child_process";
 import * as path from "path";
+import * as fs from "fs";
 
 const SOUND_COUNT = 5;
 
@@ -12,29 +12,36 @@ function getConfig(): { enabled: boolean; volume: number } {
   };
 }
 
-function playSound(soundPath: string, volume: number): void {
-  const vol = volume / 100;
+let panel: vscode.WebviewPanel | undefined;
 
-  switch (process.platform) {
-    case "darwin":
-      execFile("afplay", ["-v", String(vol), soundPath]);
-      break;
-    case "linux":
-      execFile("aplay", ["-q", soundPath]);
-      break;
-    case "win32":
-      execFile("powershell", [
-        "-NoProfile", "-Command",
-        `(New-Object Media.SoundPlayer '${soundPath.replace(/'/g, "''")}').PlaySync()`,
-      ]);
-      break;
+function getOrCreatePanel(context: vscode.ExtensionContext): vscode.WebviewPanel {
+  if (panel) {
+    return panel;
   }
+  panel = vscode.window.createWebviewPanel(
+    "fahhhPlayer",
+    "Fahhh",
+    { viewColumn: vscode.ViewColumn.One, preserveFocus: true },
+    { enableScripts: true, localResourceRoots: [vscode.Uri.file(path.join(context.extensionPath, "media"))] },
+  );
+  panel.onDidDispose(() => { panel = undefined; });
+  return panel;
 }
 
-function playRandomSound(extensionPath: string, volume: number): void {
+function playRandomSound(context: vscode.ExtensionContext, volume: number): void {
   const index = Math.floor(Math.random() * SOUND_COUNT) + 1;
-  const soundPath = path.join(extensionPath, "media", `fahhh-${index}.wav`);
-  playSound(soundPath, volume);
+  const fileName = `fahhh-${index}.wav`;
+  const soundUri = getOrCreatePanel(context).webview.asWebviewUri(
+    vscode.Uri.file(path.join(context.extensionPath, "media", fileName)),
+  );
+  const vol = volume / 100;
+
+  getOrCreatePanel(context).webview.html = `<!DOCTYPE html>
+<html><body><script>
+  const a = new Audio('${soundUri}');
+  a.volume = ${vol};
+  a.play();
+</script></body></html>`;
 }
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -45,11 +52,16 @@ export function activate(context: vscode.ExtensionContext): void {
     }
 
     if (event.exitCode !== undefined && event.exitCode !== 0) {
-      playRandomSound(context.extensionPath, volume);
+      playRandomSound(context, volume);
     }
   });
 
   context.subscriptions.push(disposable);
 }
 
-export function deactivate(): void {}
+export function deactivate(): void {
+  if (panel) {
+    panel.dispose();
+    panel = undefined;
+  }
+}
