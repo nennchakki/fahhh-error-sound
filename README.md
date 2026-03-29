@@ -45,4 +45,10 @@ code --install-extension fahhh-error-sound-0.1.0.vsix
 - コード内にエラー（赤い波線）が発生すると、fahhh-1〜5.mp3のどれかがランダムに再生されます
 - 連続再生を防ぐため1秒のデバウンスが入っています
 
-> ⚠️ 現在macOSのみ対応（`afplay`コマンド使用）
+## 対応OS
+
+| OS | 再生方法 | 備考 |
+|---|---|---|
+| macOS | `afplay` | 標準搭載 |
+| Linux | `ffplay` | `sudo apt install ffmpeg` 等で導入 |
+| Windows | PowerShell (`MediaPlayer`) | 追加インストール不要 |

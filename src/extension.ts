@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { execFile } from "child_process";
+import { execFile, exec } from "child_process";
 import * as path from "path";
 
 const SOUND_COUNT = 5;
@@ -29,16 +29,40 @@ function buildErrorUriSet(): Set<string> {
   return errorUris;
 }
 
+function playSound(soundPath: string, volume: number): void {
+  const vol = volume / 100;
+
+  switch (process.platform) {
+    case "darwin":
+      execFile("afplay", ["-v", String(vol), soundPath]);
+      break;
+    case "linux":
+      execFile("ffplay", [
+        "-nodisp", "-autoexit", "-loglevel", "quiet",
+        "-volume", String(volume), soundPath,
+      ]);
+      break;
+    case "win32": {
+      const escaped = soundPath.replace(/'/g, "''");
+      exec(
+        `powershell -NoProfile -Command "` +
+        `Add-Type -AssemblyName PresentationCore; ` +
+        `$p = New-Object System.Windows.Media.MediaPlayer; ` +
+        `$p.Volume = ${vol}; ` +
+        `$p.Open([Uri]'${escaped}'); ` +
+        `$p.Play(); ` +
+        `Start-Sleep -Seconds 5; ` +
+        `$p.Close()"`,
+      );
+      break;
+    }
+  }
+}
+
 function playRandomSound(extensionPath: string, volume: number): void {
   const index = Math.floor(Math.random() * SOUND_COUNT) + 1;
   const soundPath = path.join(extensionPath, "media", `fahhh-${index}.mp3`);
-  const afplayVolume = volume / 100;
-
-  execFile("afplay", ["-v", String(afplayVolume), soundPath], (err) => {
-    if (err) {
-      console.error("fahhh: failed to play sound", err.message);
-    }
-  });
+  playSound(soundPath, volume);
 }
 
 export function activate(context: vscode.ExtensionContext): void {
