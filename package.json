@@ -1,0 +1,51 @@
+{
+  "name": "fahhh-error-sound",
+  "displayName": "Fahhh Error Sound",
+  "description": "Plays a random 'fahhh' sound when diagnostic errors are detected",
+  "version": "0.1.0",
+  "publisher": "dansetsu",
+  "icon": "media/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dansetsu/fahhh-error-sound"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Fahhh Error Sound",
+      "properties": {
+        "fahhh.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable the error sound"
+        },
+        "fahhh.volume": {
+          "type": "number",
+          "default": 50,
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Volume level (0-100)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0"
+  }
+}
