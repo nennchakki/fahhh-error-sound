@@ -2,7 +2,7 @@
 
 ![icon](media/icon.png)
 
-VS Codeでエラーが出るたびに「FAHHH」と叫んでくれる拡張機能。
+VS Codeのターミナルでコマンドが失敗したら「FAHHH」と叫んでくれる拡張機能。
 
 [English README](README.md)
 
@@ -41,8 +41,8 @@ code --install-extension fahhh-error-sound-0.1.0.vsix
 
 ## 動作
 
-- コード内にエラー（赤い波線）が発生すると、fahhh-1〜5.wavのどれかがランダムに再生されます
-- 連続再生を防ぐため1秒のデバウンスが入っています
+- VS Codeのターミナルでコマンドが非ゼロのexit codeで終了すると、fahhh-1〜5.wavのどれかがランダムに再生されます
+- VS Code 1.93以上が必要（Shell Integration機能を使用）
 
 ## 対応OS
 

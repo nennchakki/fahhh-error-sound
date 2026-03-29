@@ -2,7 +2,7 @@
 
 ![icon](media/icon.png)
 
-A VS Code extension that screams "FAHHH" every time a diagnostic error is detected.
+A VS Code extension that screams "FAHHH" when a command fails in the terminal.
 
 [日本語版 README](README.ja.md)
 
@@ -41,8 +41,8 @@ code --install-extension fahhh-error-sound-0.1.0.vsix
 
 ## How it works
 
-- When a new diagnostic error (red squiggly) appears, a random fahhh sound (1-5) is played
-- 1-second debounce prevents rapid-fire playback
+- When a command in the VS Code terminal exits with a non-zero exit code, a random fahhh sound (1-5) is played
+- Requires VS Code 1.93+ (Shell Integration)
 
 ## Supported OS
 
