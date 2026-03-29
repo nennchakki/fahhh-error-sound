@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { execFile } from "child_process";
 import * as path from "path";
 
 const SOUND_COUNT = 5;
@@ -6,7 +7,6 @@ const DEBOUNCE_MS = 2000;
 
 let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 let previousErrorCount = 0;
-let panel: vscode.WebviewPanel | undefined;
 
 function getConfig(): { enabled: boolean; volume: number } {
   const config = vscode.workspace.getConfiguration("fahhh");
@@ -16,43 +16,33 @@ function getConfig(): { enabled: boolean; volume: number } {
   };
 }
 
-function getOrCreatePanel(context: vscode.ExtensionContext): vscode.WebviewPanel {
-  if (panel) {
-    return panel;
-  }
-  panel = vscode.window.createWebviewPanel(
-    "fahhhPlayer",
-    "Fahhh",
-    { viewColumn: vscode.ViewColumn.One, preserveFocus: true },
-    { enableScripts: true, localResourceRoots: [vscode.Uri.file(path.join(context.extensionPath, "media"))] },
-  );
-  panel.onDidDispose(() => { panel = undefined; });
-  return panel;
-}
-
-function playRandomSound(context: vscode.ExtensionContext, volume: number): void {
-  const index = Math.floor(Math.random() * SOUND_COUNT) + 1;
-  const fileName = `fahhh-${index}.wav`;
-  const p = getOrCreatePanel(context);
-  const soundUri = p.webview.asWebviewUri(
-    vscode.Uri.file(path.join(context.extensionPath, "media", fileName)),
-  );
+function playSound(soundPath: string, volume: number): void {
   const vol = volume / 100;
 
-  p.webview.html = `<!DOCTYPE html>
-<html><body><script>
-  const a = new Audio('${soundUri}');
-  a.volume = ${vol};
-  a.play();
-</script></body></html>`;
+  switch (process.platform) {
+    case "darwin":
+      execFile("afplay", ["-v", String(vol), soundPath]);
+      break;
+    case "linux":
+      execFile("aplay", ["-q", soundPath]);
+      break;
+    case "win32":
+      execFile("powershell", [
+        "-NoProfile", "-Command",
+        `(New-Object Media.SoundPlayer '${soundPath.replace(/'/g, "''")}').PlaySync()`,
+      ]);
+      break;
+  }
 }
 
-function triggerSound(context: vscode.ExtensionContext): void {
+function triggerSound(extensionPath: string): void {
   const { enabled, volume } = getConfig();
   if (!enabled || volume === 0) {
     return;
   }
-  playRandomSound(context, volume);
+  const index = Math.floor(Math.random() * SOUND_COUNT) + 1;
+  const soundPath = path.join(extensionPath, "media", `fahhh-${index}.wav`);
+  playSound(soundPath, volume);
 }
 
 function countErrors(): number {
@@ -68,13 +58,14 @@ function countErrors(): number {
 }
 
 export function activate(context: vscode.ExtensionContext): void {
+  const extPath = context.extensionPath;
   previousErrorCount = countErrors();
 
   // 1. ターミナルのコマンド失敗
   context.subscriptions.push(
     vscode.window.onDidEndTerminalShellExecution((event) => {
       if (event.exitCode !== undefined && event.exitCode !== 0) {
-        triggerSound(context);
+        triggerSound(extPath);
       }
     }),
   );
@@ -89,7 +80,7 @@ export function activate(context: vscode.ExtensionContext): void {
         }
         debounceTimer = setTimeout(() => {
           debounceTimer = undefined;
-          triggerSound(context);
+          triggerSound(extPath);
         }, DEBOUNCE_MS);
       }
       previousErrorCount = currentCount;
@@ -100,7 +91,7 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.tasks.onDidEndTaskProcess((event) => {
       if (event.exitCode !== undefined && event.exitCode !== 0) {
-        triggerSound(context);
+        triggerSound(extPath);
       }
     }),
   );
@@ -110,9 +101,5 @@ export function deactivate(): void {
   if (debounceTimer !== undefined) {
     clearTimeout(debounceTimer);
     debounceTimer = undefined;
-  }
-  if (panel) {
-    panel.dispose();
-    panel = undefined;
   }
 }
