@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { execFile, exec } from "child_process";
+import { execFile } from "child_process";
 import * as path from "path";
 
 const SOUND_COUNT = 5;
@@ -37,31 +37,20 @@ function playSound(soundPath: string, volume: number): void {
       execFile("afplay", ["-v", String(vol), soundPath]);
       break;
     case "linux":
-      execFile("ffplay", [
-        "-nodisp", "-autoexit", "-loglevel", "quiet",
-        "-volume", String(volume), soundPath,
+      execFile("aplay", ["-q", soundPath]);
+      break;
+    case "win32":
+      execFile("powershell", [
+        "-NoProfile", "-Command",
+        `(New-Object Media.SoundPlayer '${soundPath.replace(/'/g, "''")}').PlaySync()`,
       ]);
       break;
-    case "win32": {
-      const escaped = soundPath.replace(/'/g, "''");
-      exec(
-        `powershell -NoProfile -Command "` +
-        `Add-Type -AssemblyName PresentationCore; ` +
-        `$p = New-Object System.Windows.Media.MediaPlayer; ` +
-        `$p.Volume = ${vol}; ` +
-        `$p.Open([Uri]'${escaped}'); ` +
-        `$p.Play(); ` +
-        `Start-Sleep -Seconds 5; ` +
-        `$p.Close()"`,
-      );
-      break;
-    }
   }
 }
 
 function playRandomSound(extensionPath: string, volume: number): void {
   const index = Math.floor(Math.random() * SOUND_COUNT) + 1;
-  const soundPath = path.join(extensionPath, "media", `fahhh-${index}.mp3`);
+  const soundPath = path.join(extensionPath, "media", `fahhh-${index}.wav`);
   playSound(soundPath, volume);
 }
 

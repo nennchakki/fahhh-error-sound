@@ -47,8 +47,10 @@ code --install-extension fahhh-error-sound-0.1.0.vsix
 
 ## 対応OS
 
-| OS | 再生方法 | 備考 |
-|---|---|---|
-| macOS | `afplay` | 標準搭載 |
-| Linux | `ffplay` | `sudo apt install ffmpeg` 等で導入 |
-| Windows | PowerShell (`MediaPlayer`) | 追加インストール不要 |
+| OS | 再生方法 |
+|---|---|
+| macOS | `afplay`（標準搭載） |
+| Linux | `aplay`（標準搭載） |
+| Windows | PowerShell `SoundPlayer`（標準搭載） |
+
+追加インストール不要。拡張機能を入れるだけで動きます。
