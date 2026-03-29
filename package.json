@@ -1,13 +1,13 @@
 {
   "name": "fahhh-error-sound",
   "displayName": "Fahhh Error Sound",
-  "description": "Plays a random 'fahhh' sound when diagnostic errors are detected",
+  "description": "Plays a random 'fahhh' sound when a terminal command fails",
   "version": "0.1.0",
-  "publisher": "dansetsu",
+  "publisher": "nenchakki",
   "icon": "media/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dansetsu/fahhh-error-sound"
+    "url": "https://github.com/nennchakki/fahhh-error-sound"
   },
   "engines": {
     "vscode": "^1.93.0"
