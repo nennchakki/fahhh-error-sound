@@ -8,29 +8,9 @@ A VS Code extension that screams "FAHHH" when a command fails in the terminal.
 
 ## Install
 
-### From GitHub Releases (recommended)
-
 1. Download the latest `.vsix` from [Releases](https://github.com/nennchakki/fahhh-error-sound/releases)
 2. In VS Code, `Cmd+Shift+P` / `Ctrl+Shift+P` → `Extensions: Install from VSIX...`
 3. Select the downloaded `.vsix` file
-
-### From the command line
-
-```bash
-curl -LO https://github.com/nennchakki/fahhh-error-sound/releases/latest/download/fahhh-error-sound-0.1.0.vsix
-code --install-extension fahhh-error-sound-0.1.0.vsix
-```
-
-### Build from source
-
-```bash
-git clone https://github.com/nennchakki/fahhh-error-sound.git
-cd fahhh-error-sound
-pnpm install
-pnpm run compile
-npx @vscode/vsce package --no-dependencies
-code --install-extension fahhh-error-sound-0.1.0.vsix
-```
 
 ## Settings
 
@@ -42,14 +22,21 @@ code --install-extension fahhh-error-sound-0.1.0.vsix
 ## How it works
 
 - When a command in the VS Code terminal exits with a non-zero exit code, a random fahhh sound (1-5) is played
+- Works on macOS, Linux, and Windows — no additional software required
 - Requires VS Code 1.93+ (Shell Integration)
 
-## Supported OS
+## Build from source
 
-| OS | Playback method |
-|---|---|
-| macOS | `afplay` (built-in) |
-| Linux | `aplay` (built-in) |
-| Windows | PowerShell `SoundPlayer` (built-in) |
+<details>
+<summary>For developers</summary>
 
-No additional software required. Just install the extension and you're good to go.
+```bash
+git clone https://github.com/nennchakki/fahhh-error-sound.git
+cd fahhh-error-sound
+pnpm install
+pnpm run compile
+npx @vscode/vsce package --no-dependencies
+code --install-extension fahhh-error-sound-0.1.0.vsix
+```
+
+</details>
